@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFNetHex", "SFNetHex\SFNetHex.csproj", "{6ACFA46C-5B14-441E-A085-199E25CEE00A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFNetHexDemo", "SFNetHexDemo\SFNetHexDemo.csproj", "{68EF5C55-3BF8-4BFC-8A76-EE148A09B9D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6ACFA46C-5B14-441E-A085-199E25CEE00A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ACFA46C-5B14-441E-A085-199E25CEE00A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ACFA46C-5B14-441E-A085-199E25CEE00A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ACFA46C-5B14-441E-A085-199E25CEE00A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68EF5C55-3BF8-4BFC-8A76-EE148A09B9D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68EF5C55-3BF8-4BFC-8A76-EE148A09B9D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68EF5C55-3BF8-4BFC-8A76-EE148A09B9D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68EF5C55-3BF8-4BFC-8A76-EE148A09B9D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
