@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 
@@ -7,41 +8,52 @@ namespace SFNetHex
 {
     public class HexMap : Transformable, Drawable
     {
-        private struct HexColorPair
+        protected struct HexColorPair
         {
             public readonly Hex Hex;
-            public Color Color;
+            public readonly Color Color;
 
             public HexColorPair(Hex h, Color c)
             {
                 Hex = h;
                 Color = c;
             }
-
-            public void SetColor(Color c)
-            {
-                Color = c;
-            }
         }
 
-        private ConvexShape m_HexShape { get; }
-        private Layout m_Layout { get; }
-        private Dictionary<Vector2i, HexColorPair> m_HexTable { get; set; }
+        protected ConvexShape HexShape { get; }
+        protected Layout Layout { get; }
+        protected Dictionary<Vector2i, HexColorPair> HexTable { get; set; }
 
-        public HexMap(int rad, Orientation o, Vector2f cellSize)
+        private HexMap(Orientation o, Vector2f cellSize)
         {
-            m_Layout = new Layout(o, cellSize, new Vector2f(0, 0));
+            Layout = new Layout(o, cellSize, new Vector2f(0, 0));
+            HexShape = BuildShape();
+        }
 
-            m_HexShape = BuildShape();
+        /// <summary>
+        /// Creates a hexagon shaped HexMap of the given radius
+        /// </summary>
+        public HexMap(int rad, Orientation o, Vector2f cellSize)
+            : this(o, cellSize)
+        {
             BuildHexMap(rad);
+        }
+
+        /// <summary>
+        /// Creates a parallelogram shaped HexMap with the given ranges of indices
+        /// </summary>
+        public HexMap(int x1, int x2, int y1, int y2, Orientation o, Vector2f cellSize)
+            : this(o, cellSize)
+        {
+            BuildParallelogramMap(x1, x2, y1, y2);
         }
 
         public void SetColorOfCell(Vector2i i, Color c)
         {
-            if (!m_HexTable.ContainsKey(i))
+            if (!HexTable.ContainsKey(i))
                 throw new ArgumentException($"{i} is not a valid index in this HexMap");
 
-            m_HexTable[i].SetColor(c);
+            HexTable[i] = new HexColorPair(HexTable[i].Hex, c);
         }
 
         public void SetColorOfCell(int x, int y, Color c)
@@ -51,10 +63,10 @@ namespace SFNetHex
 
         public Color GetColorOfCell(Vector2i i)
         {
-            if (!m_HexTable.ContainsKey(i))
+            if (!HexTable.ContainsKey(i))
                 throw new ArgumentException($"{i} is not a valid index in this HexMap");
 
-            return m_HexTable[i].Color;
+            return HexTable[i].Color;
         }
 
         public Color GetColorOfCell(int x, int y)
@@ -62,28 +74,37 @@ namespace SFNetHex
             return GetColorOfCell(new Vector2i(x, y));
         }
 
+        public void ClearCellColors(Color c)
+        {
+            var keys = HexTable.Keys.ToList();
+            foreach (var key in keys)
+            {
+                HexTable[key] = new HexColorPair(HexTable[key].Hex, c);
+            }
+        }
+
         public void Draw(RenderTarget target, RenderStates states)
         {
             states.Transform.Combine(Transform);
 
-            foreach (var hcp in m_HexTable)
+            foreach (var hcp in HexTable)
             {
-                m_HexShape.Position = HexUtils.HexToPixel(hcp.Value.Hex, m_Layout);
-                m_HexShape.FillColor = hcp.Value.Color;
-                target.Draw(m_HexShape, states);
+                HexShape.Position = HexUtils.HexToPixel(hcp.Value.Hex, Layout);
+                HexShape.FillColor = hcp.Value.Color;
+                target.Draw(HexShape, states);
             }
         }
 
         private ConvexShape BuildShape()
         {
-            var hex = HexUtils.PixelToHex(new Vector2f(0, 0), m_Layout);
+            var hex = HexUtils.PixelToHex(new Vector2f(0, 0), Layout);
             var shape = new ConvexShape(6)
             {
                 OutlineThickness = 1,
                 FillColor = Color.Black
             };
 
-            var corners = hex.Corners(m_Layout);
+            var corners = hex.Corners(Layout);
             for (var i = 0; i < corners.Count; i++)
             {
                 shape.SetPoint((uint)i, corners[i]);
@@ -94,7 +115,7 @@ namespace SFNetHex
 
         private void BuildHexMap(int rad)
         {
-            m_HexTable = new Dictionary<Vector2i, HexColorPair>();
+            HexTable = new Dictionary<Vector2i, HexColorPair>();
 
             for (var q = -rad; q <= rad; q++)
             {
@@ -103,7 +124,21 @@ namespace SFNetHex
                 for (var r = r1; r <= r2; r++)
                 {
                     var hcp = new HexColorPair(new Hex(q, r, -q - r), Color.Black);
-                    m_HexTable.Add(new Vector2i(q, r), hcp);
+                    HexTable.Add(new Vector2i(q, r), hcp);
+                }
+            }
+        }
+
+        private void BuildParallelogramMap(int q1, int q2, int r1, int r2)
+        {
+            HexTable = new Dictionary<Vector2i, HexColorPair>();
+
+            for (var q = q1; q <= q2; q++)
+            {
+                for (var r = r1; r <= r2; r++)
+                {
+                    var hcp = new HexColorPair(new Hex(q, r, -q - r), Color.Black);
+                    HexTable.Add(new Vector2i(q, r), hcp);
                 }
             }
         }

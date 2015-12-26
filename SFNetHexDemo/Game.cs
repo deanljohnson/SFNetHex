@@ -11,7 +11,7 @@ namespace SFNetHexDemo
     {
         private static readonly Vector2u DefaultWindowSize = new Vector2u(1600, 900);
         private const uint DISPLAY_RATE = 60;
-        private const String GAME_NAME = "My Game";
+        private const String GAME_NAME = "SFNetHex Test";
         private static Stopwatch m_Timer { get; } = new Stopwatch();
         private static long m_LastTime { get; set; }
 
@@ -28,10 +28,12 @@ namespace SFNetHexDemo
         {
             m_Timer.Start();
 
-            HexMap = new HexMap(30, Orientation.LayoutFlat, new Vector2f(10, 7))
+            HexMap = new HexMap(5, Orientation.Flat, new Vector2f(10, 7))
             {
                 Position = new Vector2f(Window.Size.X / 2f, Window.Size.Y / 2f)
             };
+
+            HexMap.SetColorOfCell(0, 0, Color.Green);
 
             while (Window.IsOpen)
             {

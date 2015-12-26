@@ -68,6 +68,11 @@ namespace SFNetHex
             return new Hex(x, y, -x - y);
         }
 
+        public static Hex RoundHex(this Hex h)
+        {
+            return new Hex((float) Math.Round(h.X), (float) Math.Round(h.Y), (float) Math.Round(h.Z));
+        }
+
         public static Vector2f HexCornerOffset(int corner, Layout l)
         {
             var angle = (float) (2f*Math.PI*(corner + l.Orientation.StartAngle)/6);

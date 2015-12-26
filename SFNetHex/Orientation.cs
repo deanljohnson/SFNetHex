@@ -4,10 +4,10 @@ namespace SFNetHex
 {
     public struct Orientation
     {
-        public static readonly Orientation LayoutPointy = 
+        public static readonly Orientation Pointed = 
             new Orientation((float) Math.Sqrt(3), (float) (Math.Sqrt(3) / 2f), 0f, 3f / 2f, 
                             (float) (Math.Sqrt(3) / 3f), -1f/3f, 0f, 2f/3f, .5f);
-        public static readonly Orientation LayoutFlat =
+        public static readonly Orientation Flat =
             new Orientation(3f/2f, 0f, (float)(Math.Sqrt(3) / 2f), (float)Math.Sqrt(3),
                             2f/3f, 0f, -1f/3f, (float)(Math.Sqrt(3) / 3f), 0f);
 
