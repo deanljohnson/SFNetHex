@@ -2,7 +2,7 @@
 {
     public struct Hex
     {
-        public float X, Y, Z;
+        public readonly float X, Y, Z;
 
         public Hex(float x, float y, float z)
         {

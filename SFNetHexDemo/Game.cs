@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -11,14 +9,14 @@ namespace SFNetHexDemo
 {
     public static class Game
     {
-        private static readonly Vector2u DefaultWindowSize = new Vector2u(1920, 1080);
+        private static readonly Vector2u DefaultWindowSize = new Vector2u(1600, 900);
         private const uint DISPLAY_RATE = 60;
         private const String GAME_NAME = "My Game";
         private static Stopwatch m_Timer { get; } = new Stopwatch();
         private static long m_LastTime { get; set; }
 
         public static RenderWindow Window { get; private set; }
-        public static List<DrawableHex> Hexes { get; set; } = new List<DrawableHex>();
+        public static HexMap HexMap { get; set; }
 
         public static void Main()
         {
@@ -30,8 +28,10 @@ namespace SFNetHexDemo
         {
             m_Timer.Start();
 
-            var l = new Layout(Orientation.LayoutFlat, new Vector2f(20, 20), new Vector2f(200, 200));
-            BuildHexMap(5, l);
+            HexMap = new HexMap(30, Orientation.LayoutFlat, new Vector2f(10, 7))
+            {
+                Position = new Vector2f(Window.Size.X / 2f, Window.Size.Y / 2f)
+            };
 
             while (Window.IsOpen)
             {
@@ -54,27 +54,7 @@ namespace SFNetHexDemo
 
         private static void Render()
         {
-            foreach (var hex in Hexes)
-            {
-                Window.Draw(hex);
-            }
-        }
-
-        private static void BuildHexMap(int rad, Layout l)
-        {
-            for (var q = -rad; q <= rad; q++)
-            {
-                var r1 = Math.Max(-rad, -q - rad);
-                var r2 = Math.Min(rad, -q + rad);
-                for (var r = r1; r <= r2; r++)
-                {
-                    Hexes.Add(new DrawableHex(HexUtils.HexIndexToPixel(q, r, l), l));
-                    if (q == 0 && r == 0)
-                    {
-                        Hexes.Last().FillColor = Color.Blue;
-                    }
-                }
-            }
+            Window.Draw(HexMap);
         }
 
         private static float GetDeltaTime()

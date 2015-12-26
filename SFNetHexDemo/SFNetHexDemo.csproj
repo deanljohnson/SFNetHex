@@ -71,7 +71,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DrawableHex.cs" />
     <Compile Include="Game.cs" />
   </ItemGroup>
   <ItemGroup>
