@@ -16,7 +16,7 @@ namespace SFNetHexDemo
         private static long m_LastTime { get; set; }
 
         public static RenderWindow Window { get; private set; }
-        public static HexMap HexMap { get; set; }
+        public static DrawableHexMap DrawableHexMap { get; set; }
 
         public static void Main()
         {
@@ -28,12 +28,12 @@ namespace SFNetHexDemo
         {
             m_Timer.Start();
 
-            HexMap = new HexMap(5, Orientation.Flat, new Vector2f(10, 7))
+            DrawableHexMap = new DrawableHexMap(1, Orientation.Flat, new Vector2f(20, 20))
             {
                 Position = new Vector2f(Window.Size.X / 2f, Window.Size.Y / 2f)
             };
 
-            HexMap.SetColorOfCell(0, 0, Color.Green);
+            DrawableHexMap.SetColorOfCell(0, 0, Color.Green);
 
             while (Window.IsOpen)
             {
@@ -56,7 +56,7 @@ namespace SFNetHexDemo
 
         private static void Render()
         {
-            Window.Draw(HexMap);
+            Window.Draw(DrawableHexMap);
         }
 
         private static float GetDeltaTime()

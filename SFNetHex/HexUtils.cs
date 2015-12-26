@@ -68,9 +68,36 @@ namespace SFNetHex
             return new Hex(x, y, -x - y);
         }
 
+        public static Hex PixelToHexIndex(Vector2f p, Layout l)
+        {
+            return PixelToHex(p, l).RoundHex();
+        }
+
         public static Hex RoundHex(this Hex h)
         {
-            return new Hex((float) Math.Round(h.X), (float) Math.Round(h.Y), (float) Math.Round(h.Z));
+            //We have to perform this round/dif check to maintain the 
+            //cubic coordinate trait that x + y + z = 0
+            var rx = (float)Math.Round(h.X);
+            var ry = (float)Math.Round(h.Y);
+            var rz = (float)Math.Round(h.Z);
+            var xdif = Math.Abs(rx - h.X);
+            var ydif = Math.Abs(ry - h.Y);
+            var zdif = Math.Abs(rz - h.Z);
+
+            if (xdif > ydif && xdif > zdif)
+            {
+                rx = -ry - rz;
+            }
+            else if (ydif > zdif)
+            {
+                ry = -rx - rz;
+            }
+            else
+            {
+                rz = -rx - ry;
+            }
+
+            return new Hex(rx, ry, rz);
         }
 
         public static Vector2f HexCornerOffset(int corner, Layout l)

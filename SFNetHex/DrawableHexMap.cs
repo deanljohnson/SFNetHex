@@ -6,7 +6,7 @@ using SFML.System;
 
 namespace SFNetHex
 {
-    public class HexMap : Transformable, Drawable
+    public class DrawableHexMap : Transformable, Drawable
     {
         protected struct HexColorPair
         {
@@ -24,25 +24,35 @@ namespace SFNetHex
         protected Layout Layout { get; }
         protected Dictionary<Vector2i, HexColorPair> HexTable { get; set; }
 
-        private HexMap(Orientation o, Vector2f cellSize)
+        public Color OutlineColor {
+            get { return HexShape.OutlineColor; }
+            set { HexShape.OutlineColor = value; }
+        }
+
+        public float OutlineThickness {
+            get { return HexShape.OutlineThickness; }
+            set { HexShape.OutlineThickness = value; }
+        }
+
+        private DrawableHexMap(Orientation o, Vector2f cellSize)
         {
             Layout = new Layout(o, cellSize, new Vector2f(0, 0));
             HexShape = BuildShape();
         }
 
         /// <summary>
-        /// Creates a hexagon shaped HexMap of the given radius
+        /// Creates a hexagon shaped DrawableHexMap of the given radius
         /// </summary>
-        public HexMap(int rad, Orientation o, Vector2f cellSize)
+        public DrawableHexMap(int rad, Orientation o, Vector2f cellSize)
             : this(o, cellSize)
         {
             BuildHexMap(rad);
         }
 
         /// <summary>
-        /// Creates a parallelogram shaped HexMap with the given ranges of indices
+        /// Creates a parallelogram shaped DrawableHexMap with the given ranges of indices
         /// </summary>
-        public HexMap(int x1, int x2, int y1, int y2, Orientation o, Vector2f cellSize)
+        public DrawableHexMap(int x1, int x2, int y1, int y2, Orientation o, Vector2f cellSize)
             : this(o, cellSize)
         {
             BuildParallelogramMap(x1, x2, y1, y2);
