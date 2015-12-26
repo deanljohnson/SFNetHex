@@ -1,28 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 
 namespace SFNetHex
 {
-    public class DrawableHexMap : Transformable, Drawable
+    public class DrawableHexMap : HexMap, Drawable
     {
-        protected struct HexColorPair
-        {
-            public readonly Hex Hex;
-            public readonly Color Color;
-
-            public HexColorPair(Hex h, Color c)
-            {
-                Hex = h;
-                Color = c;
-            }
-        }
-
         protected ConvexShape HexShape { get; }
-        protected Layout Layout { get; }
-        protected Dictionary<Vector2i, HexColorPair> HexTable { get; set; }
+        protected Dictionary<Vector2i, Color> ColorTable { get; set; } = new Dictionary<Vector2i, Color>();
 
         public Color OutlineColor {
             get { return HexShape.OutlineColor; }
@@ -34,36 +20,27 @@ namespace SFNetHex
             set { HexShape.OutlineThickness = value; }
         }
 
-        private DrawableHexMap(Orientation o, Vector2f cellSize)
-        {
-            Layout = new Layout(o, cellSize, new Vector2f(0, 0));
-            HexShape = BuildShape();
-        }
-
         /// <summary>
         /// Creates a hexagon shaped DrawableHexMap of the given radius
         /// </summary>
         public DrawableHexMap(int rad, Orientation o, Vector2f cellSize)
-            : this(o, cellSize)
+            : base(rad, o, cellSize)
         {
-            BuildHexMap(rad);
+            HexShape = BuildShape();
         }
 
         /// <summary>
         /// Creates a parallelogram shaped DrawableHexMap with the given ranges of indices
         /// </summary>
         public DrawableHexMap(int x1, int x2, int y1, int y2, Orientation o, Vector2f cellSize)
-            : this(o, cellSize)
+            : base(x1, x2, y1, y2, o, cellSize)
         {
-            BuildParallelogramMap(x1, x2, y1, y2);
+            HexShape = BuildShape();
         }
 
         public void SetColorOfCell(Vector2i i, Color c)
         {
-            if (!HexTable.ContainsKey(i))
-                throw new ArgumentException($"{i} is not a valid index in this HexMap");
-
-            HexTable[i] = new HexColorPair(HexTable[i].Hex, c);
+            ColorTable[i] = c;
         }
 
         public void SetColorOfCell(int x, int y, Color c)
@@ -73,10 +50,7 @@ namespace SFNetHex
 
         public Color GetColorOfCell(Vector2i i)
         {
-            if (!HexTable.ContainsKey(i))
-                throw new ArgumentException($"{i} is not a valid index in this HexMap");
-
-            return HexTable[i].Color;
+            return ColorTable[i];
         }
 
         public Color GetColorOfCell(int x, int y)
@@ -86,10 +60,10 @@ namespace SFNetHex
 
         public void ClearCellColors(Color c)
         {
-            var keys = HexTable.Keys.ToList();
+            var keys = ColorTable.Keys.ToList();
             foreach (var key in keys)
             {
-                HexTable[key] = new HexColorPair(HexTable[key].Hex, c);
+                ColorTable[key] = c;
             }
         }
 
@@ -97,12 +71,18 @@ namespace SFNetHex
         {
             states.Transform.Combine(Transform);
 
-            foreach (var hcp in HexTable)
+            foreach (var ct in ColorTable)
             {
-                HexShape.Position = HexUtils.HexToPixel(hcp.Value.Hex, Layout);
-                HexShape.FillColor = hcp.Value.Color;
+                HexShape.Position = HexUtils.HexToPixel(this[ct.Key], Layout);
+                HexShape.FillColor = ct.Value;
                 target.Draw(HexShape, states);
             }
+        }
+
+        protected override void Add(Vector2i i, Hex h)
+        {
+            base.Add(i, h);
+            ColorTable.Add(i, Color.Black);
         }
 
         private ConvexShape BuildShape()
@@ -121,36 +101,6 @@ namespace SFNetHex
             }
 
             return shape;
-        }
-
-        private void BuildHexMap(int rad)
-        {
-            HexTable = new Dictionary<Vector2i, HexColorPair>();
-
-            for (var q = -rad; q <= rad; q++)
-            {
-                var r1 = Math.Max(-rad, -q - rad);
-                var r2 = Math.Min(rad, -q + rad);
-                for (var r = r1; r <= r2; r++)
-                {
-                    var hcp = new HexColorPair(new Hex(q, r, -q - r), Color.Black);
-                    HexTable.Add(new Vector2i(q, r), hcp);
-                }
-            }
-        }
-
-        private void BuildParallelogramMap(int q1, int q2, int r1, int r2)
-        {
-            HexTable = new Dictionary<Vector2i, HexColorPair>();
-
-            for (var q = q1; q <= q2; q++)
-            {
-                for (var r = r1; r <= r2; r++)
-                {
-                    var hcp = new HexColorPair(new Hex(q, r, -q - r), Color.Black);
-                    HexTable.Add(new Vector2i(q, r), hcp);
-                }
-            }
         }
     }
 }

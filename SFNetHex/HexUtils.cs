@@ -58,6 +58,11 @@ namespace SFNetHex
             return new Vector2f(x + l.Origin.X, y + l.Origin.Y);
         }
 
+        public static Vector2f HexIndexToPixel(Vector2i i, Layout l)
+        {
+            return HexIndexToPixel(i.X, i.Y, l);
+        }
+
         public static Hex PixelToHex(Vector2f p, Layout l)
         {
             var o = l.Orientation;
