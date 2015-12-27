@@ -19,18 +19,13 @@ namespace SFNetHex
             return new Vector2f(x + l.Origin.X, y + l.Origin.Y);
         }
 
-        public static Vector2f HexIndexToPixel(int ix, int iy, Layout l)
+        public static Vector2f HexToPixel(int ix, int iy, Layout l)
         {
             var o = l.Orientation;
             var x = (o.F0 * ix + o.F1 * iy) * l.Size.X;
             var y = (o.F2 * ix + o.F3 * iy) * l.Size.Y;
 
             return new Vector2f(x + l.Origin.X, y + l.Origin.Y);
-        }
-
-        public static Vector2f HexIndexToPixel(Vector2i i, Layout l)
-        {
-            return HexIndexToPixel(i.X, i.Y, l);
         }
 
         public static FractionalHex PixelToHex(Vector2f p, Layout l)
@@ -45,40 +40,20 @@ namespace SFNetHex
 
         public static Hex PixelToWholeHex(Vector2f p, Layout l)
         {
-            return PixelToHex(p, l).RoundHex();
+            return PixelToHex(p, l).Round();
         }
 
         public static Vector2i PixelToHexIndex(Vector2f p, Layout l)
         {
-            var h = PixelToHex(p, l).RoundHex();
+            var h = PixelToHex(p, l).Round();
             return new Vector2i(h.X, h.Y);
         }
 
-        public static Hex RoundHex(this FractionalHex h)
+        public static FractionalHex HexLerp(Hex a, Hex b, float t)
         {
-            //We have to perform this round/dif check to maintain the 
-            //cubic coordinate trait that x + y + z = 0
-            var rx = (int)Math.Round(h.X);
-            var ry = (int)Math.Round(h.Y);
-            var rz = (int)Math.Round(h.Z);
-            var xdif = Math.Abs(rx - h.X);
-            var ydif = Math.Abs(ry - h.Y);
-            var zdif = Math.Abs(rz - h.Z);
-
-            if (xdif > ydif && xdif > zdif)
-            {
-                rx = -ry - rz;
-            }
-            else if (ydif > zdif)
-            {
-                ry = -rx - rz;
-            }
-            else
-            {
-                rz = -rx - ry;
-            }
-
-            return new Hex(rx, ry, rz);
+            return new FractionalHex(a.X + ((b.X - a.X) * t),
+                                    a.Y + ((b.Y - a.Y) * t),
+                                    a.Z + ((b.Z - a.Z) * t));
         }
 
         public static Vector2f HexCornerOffset(int corner, Layout l)

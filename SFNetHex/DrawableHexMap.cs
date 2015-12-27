@@ -30,17 +30,33 @@ namespace SFNetHex
         }
 
         /// <summary>
-        /// Creates a parallelogram shaped DrawableHexMap with the given ranges of indices
+        /// Creates a DrawableHexMap of the given hexes
         /// </summary>
-        public DrawableHexMap(int x1, int x2, int y1, int y2, Orientation o, Vector2f cellSize)
-            : base(x1, x2, y1, y2, o, cellSize)
+        public DrawableHexMap(HashSet<Hex> hexes, Orientation o, Vector2f cellSize)
+            : base(hexes, o, cellSize)
         {
             HexShape = BuildShape();
+
+            foreach (var hex in hexes)
+            {
+                ColorTable.Add(hex, Color.Black);
+            }
+        }
+
+        public bool Contains(Hex h)
+        {
+            return HexSet.Contains(h);
         }
 
         public void SetColorOfCell(Hex h, Color c)
         {
-            ColorTable[h] = c;
+            if (ColorTable.ContainsKey(h))
+            {
+                ColorTable[h] = c;
+                return;
+            }
+            
+            throw new KeyNotFoundException($"{h} is not a valid Hex in this HexMap");
         }
 
         public void SetColorOfCell(int x, int y, Color c)
@@ -79,15 +95,14 @@ namespace SFNetHex
             }
         }
 
-        protected override void Add(Hex h)
+        protected override void OnAdd(Hex h)
         {
-            base.Add(h);
             ColorTable.Add(h, Color.Black);
         }
 
         private ConvexShape BuildShape()
         {
-            var hex = HexUtils.PixelToHex(new Vector2f(0, 0), Layout).RoundHex();
+            var hex = HexUtils.PixelToHex(new Vector2f(0, 0), Layout).Round();
             var shape = new ConvexShape(6)
             {
                 OutlineThickness = 1,

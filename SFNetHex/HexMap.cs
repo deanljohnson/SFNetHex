@@ -28,23 +28,19 @@ namespace SFNetHex
             BuildParallelogramMap(x1, x2, y1, y2);
         }
 
-        /// <summary>
-        /// Returns the Position of the Hex at the given index in this HexMap
-        /// </summary>
-        public Vector2f GetHexPosition(Vector2i i)
+        public HexMap(IEnumerable<Hex> hexes, Orientation o, Vector2f cellSize)
+            : this(o, cellSize)
         {
-            var pos = HexUtils.HexIndexToPixel(i, Layout);
-            return Transform.TransformPoint(pos);
+            HexSet = new HashSet<Hex>(hexes);
         }
 
         /// <summary>
-        /// Returns the Hex index that corresponds to the given Position.
-        /// Will not necessarily be on the HexMap
+        /// Returns the Position of the given Hex
         /// </summary>
-        public Vector2i GetNearestHexIndex(Vector2f p)
+        public Vector2f GetHexPosition(Hex h)
         {
-            p = InverseTransform.TransformPoint(p);
-            return HexUtils.PixelToHexIndex(p, Layout);
+            var pos = HexUtils.HexToPixel(h, Layout);
+            return Transform.TransformPoint(pos);
         }
 
         /// <summary>
@@ -57,10 +53,72 @@ namespace SFNetHex
             return HexUtils.PixelToWholeHex(p, Layout);
         }
 
-        // Exposed as a virtual method so that inheritors can know when a new Hex is added
-        protected virtual void Add(Hex h)
+        /// <summary>
+        /// Returns a List of all Hexes in the a line from start to end 
+        /// that exist in this HexMap
+        /// </summary>
+        public HashSet<Hex> GetHexesInLine(Hex start, Hex end)
         {
+            var results = Hex.GetHexesInLine(start, end);
+            return TrimToOnMap(results);
+            
+        }
+
+        /// <summary>
+        /// Returns a List of all Hexes within range of center that exist in this HexMap
+        /// </summary>
+        public HashSet<Hex> GetHexesInRange(Hex center, int range)
+        {
+            var results = Hex.GetHexesInRange(center, range);
+            return TrimToOnMap(results);
+        }
+
+        /// <summary>
+        /// Returns a List of all Hexes that are at the given radius from the 
+        /// given center that exist in this HexMap
+        /// </summary>
+        public HashSet<Hex> GetHexesInRing(Hex center, int radius)
+        {
+            var results = Hex.GetHexesInRing(center, radius);
+            return TrimToOnMap(results);
+        }
+
+        // Exposed as a virtual method so that inheritors can know when a new Hex is added
+        public virtual bool Add(Hex h, bool throwOnContains = true)
+        {
+            if (HexSet.Contains(h))
+            {
+                if (throwOnContains)
+                {
+                    throw new ArgumentException($"{h} already exists in the HexMap");
+                }
+                return false;
+            }
+
             HexSet.Add(h);
+            OnAdd(h);
+            return true;
+        }
+
+        public virtual void Add(IEnumerable<Hex> hexes, bool throwOnContains = true)
+        {
+            foreach (var hex in hexes)
+            {
+                Add(hex, throwOnContains);
+            }
+        }
+
+        /// <summary>
+        /// Override this method to be notified anytime a Hex is added to the HexMap
+        /// </summary>
+        protected virtual void OnAdd(Hex h)
+        {
+        }
+
+        private HashSet<Hex> TrimToOnMap(HashSet<Hex> hexes)
+        {
+            hexes.IntersectWith(HexSet);
+            return hexes;
         }
 
         private void BuildHexMap(int rad)

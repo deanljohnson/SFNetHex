@@ -28,13 +28,17 @@ namespace SFNetHexDemo
         {
             m_Timer.Start();
 
-            DrawableHexMap = new DrawableHexMap(3, Orientation.Flat, new Vector2f(20, 20))
+            var hexes = Hex.GetHexesInRange(Hex.Zero, 50);
+            hexes.ExceptWith(Hex.GetHexesInRange(Hex.Zero, 30));
+            hexes.UnionWith(Hex.GetHexesInRange(Hex.Zero, 10));
+
+            DrawableHexMap = new DrawableHexMap(hexes, Orientation.Flat, new Vector2f(5, 5))
             {
                 Position = new Vector2f(Window.Size.X / 2f, Window.Size.Y / 2f)
             };
 
             DrawableHexMap.SetColorOfCell(0, 0, Color.Green);
-
+            
             while (Window.IsOpen)
             {
                 Window.DispatchEvents();
@@ -53,10 +57,26 @@ namespace SFNetHexDemo
         {
             Console.Clear();
             var mousePos = Mouse.GetPosition(Window);
-            var index = DrawableHexMap.GetNearestHexIndex(new Vector2f(mousePos.X, mousePos.Y));
-            var hex = DrawableHexMap.GetNearestWholeHex(new Vector2f(mousePos.X, mousePos.Y));
-            Console.WriteLine($"Hex Index Closest to Mouse: {index}");
-            Console.WriteLine($"Hex Closest to Mouse: {hex}");
+            var mouseHex = DrawableHexMap.GetNearestWholeHex(new Vector2f(mousePos.X, mousePos.Y));
+            Console.WriteLine($"Hex Closest to Mouse: {mouseHex}");
+
+            var rangeHexes = DrawableHexMap.GetHexesInRange(Hex.Zero, mouseHex.Length());
+            var lineHexes = DrawableHexMap.GetHexesInLine(Hex.Zero, mouseHex);
+            var ringHexes = DrawableHexMap.GetHexesInRing(Hex.Zero, mouseHex.Length());
+
+            DrawableHexMap.ClearCellColors(Color.Black);
+            foreach (var h in rangeHexes)
+            {
+                DrawableHexMap.SetColorOfCell(h, Color.Cyan);
+            }
+            foreach (var h in ringHexes)
+            {
+                DrawableHexMap.SetColorOfCell(h, Color.Magenta);
+            }
+            foreach (var h in lineHexes)
+            {
+                DrawableHexMap.SetColorOfCell(h, Color.Green);
+            }
         }
 
         private static void Render()
