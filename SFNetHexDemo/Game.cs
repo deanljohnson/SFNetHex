@@ -28,7 +28,7 @@ namespace SFNetHexDemo
         {
             m_Timer.Start();
 
-            DrawableHexMap = new DrawableHexMap(1, Orientation.Flat, new Vector2f(20, 20))
+            DrawableHexMap = new DrawableHexMap(3, Orientation.Flat, new Vector2f(20, 20))
             {
                 Position = new Vector2f(Window.Size.X / 2f, Window.Size.Y / 2f)
             };
@@ -51,7 +51,12 @@ namespace SFNetHexDemo
 
         private static void Update(float dt)
         {
-
+            Console.Clear();
+            var mousePos = Mouse.GetPosition(Window);
+            var index = DrawableHexMap.GetNearestHexIndex(new Vector2f(mousePos.X, mousePos.Y));
+            var hex = DrawableHexMap.GetNearestWholeHex(new Vector2f(mousePos.X, mousePos.Y));
+            Console.WriteLine($"Hex Index Closest to Mouse: {index}");
+            Console.WriteLine($"Hex Closest to Mouse: {hex}");
         }
 
         private static void Render()

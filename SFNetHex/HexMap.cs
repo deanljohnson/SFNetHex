@@ -31,16 +31,36 @@ namespace SFNetHex
             BuildParallelogramMap(x1, x2, y1, y2);
         }
 
+        /// <summary>
+        /// Returns the Position of the Hex at the given index in this HexMap
+        /// </summary>
         public Vector2f GetHexPosition(Vector2i i)
         {
             var pos = HexUtils.HexIndexToPixel(i, Layout);
-
             return Transform.TransformPoint(pos);
         }
 
         /// <summary>
-        /// Exposed as a virtual method so that inheritors can know when a new Hex is added
+        /// Returns the Hex index that corresponds to the given Position.
+        /// Will not necessarily be on the HexMap
         /// </summary>
+        public Vector2i GetNearestHexIndex(Vector2f p)
+        {
+            p = InverseTransform.TransformPoint(p);
+            return HexUtils.PixelToHexIndex(p, Layout);
+        }
+
+        /// <summary>
+        /// Returns the nearest whole Hex coordinate that corresponds to the given Position.
+        /// Will not necessarily be on the HexMap
+        /// </summary>
+        public Hex GetNearestWholeHex(Vector2f p)
+        {
+            p = InverseTransform.TransformPoint(p);
+            return HexUtils.PixelToWholeHex(p, Layout);
+        }
+
+        // Exposed as a virtual method so that inheritors can know when a new Hex is added
         protected virtual void Add(Vector2i i, Hex h)
         {
             HexTable.Add(i, h);

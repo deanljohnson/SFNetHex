@@ -7,12 +7,12 @@ namespace SFNetHex
     public static class HexUtils
     {
         private static readonly Hex[] HexDirections = {
-            new Hex(1, 0, -1),
-            new Hex(1, -1, 0),
-            new Hex(0, -1, 1),
-            new Hex(-1, 0, 1),
-            new Hex(-1, 1, 0),
-            new Hex(0, 1, -1),
+            new Hex(1, 0),
+            new Hex(1, -1),
+            new Hex(0, -1),
+            new Hex(-1, 0),
+            new Hex(-1, 1),
+            new Hex(0, 1),
         };
 
         public static Hex HexDirection(int i)
@@ -70,12 +70,18 @@ namespace SFNetHex
                                     (p.Y - l.Origin.Y) / l.Size.Y);
             var x = o.B0*pt.X + o.B1*pt.Y;
             var y = o.B2*pt.X + o.B3*pt.Y;
-            return new Hex(x, y, -x - y);
+            return new Hex(x, y);
         }
 
-        public static Hex PixelToHexIndex(Vector2f p, Layout l)
+        public static Hex PixelToWholeHex(Vector2f p, Layout l)
         {
             return PixelToHex(p, l).RoundHex();
+        }
+
+        public static Vector2i PixelToHexIndex(Vector2f p, Layout l)
+        {
+            var h = PixelToHex(p, l).RoundHex();
+            return new Vector2i((int) h.X, (int) h.Y);
         }
 
         public static Hex RoundHex(this Hex h)

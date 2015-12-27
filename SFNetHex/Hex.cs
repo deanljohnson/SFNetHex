@@ -4,11 +4,23 @@
     {
         public readonly float X, Y, Z;
 
+        public Hex(float x, float y)
+        {
+            X = x;
+            Y = y;
+            Z = -x - y;
+        }
+
         public Hex(float x, float y, float z)
         {
             X = x;
             Y = y;
             Z = z;
+        }
+
+        public override string ToString()
+        {
+            return $"[Hex]: X({X}) Y({Y}) Z({Z})";
         }
 
         public static Hex operator +(Hex a, Hex b)
@@ -33,7 +45,7 @@
 
         public bool Equals(Hex other)
         {
-            return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z);
+            return X.Equals(other.X) && Y.Equals(other.Y);
         }
 
         public override bool Equals(object obj)
@@ -48,7 +60,6 @@
             {
                 var hashCode = X.GetHashCode();
                 hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ Z.GetHashCode();
                 return hashCode;
             }
         }
