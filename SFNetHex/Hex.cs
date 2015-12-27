@@ -1,23 +1,60 @@
-﻿namespace SFNetHex
+﻿using System;
+using System.Collections.Generic;
+using SFML.System;
+
+namespace SFNetHex
 {
     public struct Hex
     {
-        public readonly float X, Y, Z;
+        private static readonly Hex[] HexDirections = {
+            new Hex(1, 0),
+            new Hex(1, -1),
+            new Hex(0, -1),
+            new Hex(-1, 0),
+            new Hex(-1, 1),
+            new Hex(0, 1),
+        };
 
-        public Hex(float x, float y)
+        public readonly int X, Y, Z;
+
+        public Hex(int x, int y)
         {
             X = x;
             Y = y;
             Z = -x - y;
         }
 
-        public Hex(float x, float y, float z)
+        public Hex(int x, int y, int z)
         {
             X = x;
             Y = y;
             Z = z;
         }
 
+        public List<Vector2f> Corners(Layout l)
+        {
+            var ret = new List<Vector2f>();
+            var center = HexUtils.HexToPixel(this, l);
+
+            for (var i = 0; i < 6; i++)
+            {
+                ret.Add(center + HexUtils.HexCornerOffset(i, l));
+            }
+
+            return ret;
+        }
+
+        public Hex GetNeighbor(int dir)
+        {
+            return this + HexDirections[dir % 6];
+        }
+
+        public int Length()
+        {
+            return (Math.Abs(X) + Math.Abs(Y) + Math.Abs(Z)) / 2;
+        }
+
+        #region Operators/Equality Members
         public override string ToString()
         {
             return $"[Hex]: X({X}) Y({Y}) Z({Z})";
@@ -33,12 +70,12 @@
             return new Hex(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         }
 
-        public static Hex operator *(Hex a, float b)
+        public static Hex operator *(Hex a, int b)
         {
             return new Hex(a.X * b, a.Y * b, a.Z * b);
         }
 
-        public static Hex operator /(Hex a, float b)
+        public static Hex operator /(Hex a, int b)
         {
             return new Hex(a.X / b, a.Y / b, a.Z / b);
         }
@@ -73,5 +110,6 @@
         {
             return !left.Equals(right);
         }
+        #endregion
     }
 }

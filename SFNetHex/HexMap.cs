@@ -8,14 +8,11 @@ namespace SFNetHex
     public class HexMap : Transformable
     {
         protected Layout Layout { get; }
-        protected Dictionary<Vector2i, Hex> HexTable { get; set; }
-
-        public Hex this[Vector2i i] => HexTable[i];
-        public Hex this[int x, int y] => HexTable[new Vector2i(x, y)];
+        protected HashSet<Hex> HexSet { get; set; }
 
         private HexMap(Orientation o, Vector2f cellSize)
         {
-            HexTable = new Dictionary<Vector2i, Hex>();
+            HexSet = new HashSet<Hex>();
             Layout = new Layout(o, cellSize, new Vector2f(0, 0));
         }
 
@@ -61,9 +58,9 @@ namespace SFNetHex
         }
 
         // Exposed as a virtual method so that inheritors can know when a new Hex is added
-        protected virtual void Add(Vector2i i, Hex h)
+        protected virtual void Add(Hex h)
         {
-            HexTable.Add(i, h);
+            HexSet.Add(h);
         }
 
         private void BuildHexMap(int rad)
@@ -74,7 +71,7 @@ namespace SFNetHex
                 var r2 = Math.Min(rad, -q + rad);
                 for (var r = r1; r <= r2; r++)
                 {
-                    Add(new Vector2i(q, r), new Hex(q, r, -q - r));
+                    Add(new Hex(q, r));
                 }
             }
         }
@@ -85,7 +82,7 @@ namespace SFNetHex
             {
                 for (var r = r1; r <= r2; r++)
                 {
-                    Add(new Vector2i(q, r), new Hex(q, r, -q - r));
+                    Add(new Hex(q, r));
                 }
             }
         }

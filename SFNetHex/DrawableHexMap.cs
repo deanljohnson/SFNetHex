@@ -8,7 +8,7 @@ namespace SFNetHex
     public class DrawableHexMap : HexMap, Drawable
     {
         protected ConvexShape HexShape { get; }
-        protected Dictionary<Vector2i, Color> ColorTable { get; set; } = new Dictionary<Vector2i, Color>();
+        protected Dictionary<Hex, Color> ColorTable { get; set; } = new Dictionary<Hex, Color>();
 
         public Color OutlineColor {
             get { return HexShape.OutlineColor; }
@@ -38,24 +38,24 @@ namespace SFNetHex
             HexShape = BuildShape();
         }
 
-        public void SetColorOfCell(Vector2i i, Color c)
+        public void SetColorOfCell(Hex h, Color c)
         {
-            ColorTable[i] = c;
+            ColorTable[h] = c;
         }
 
         public void SetColorOfCell(int x, int y, Color c)
         {
-            SetColorOfCell(new Vector2i(x, y), c);
+            SetColorOfCell(new Hex(x, y), c);
         }
 
-        public Color GetColorOfCell(Vector2i i)
+        public Color GetColorOfCell(Hex h)
         {
-            return ColorTable[i];
+            return ColorTable[h];
         }
 
         public Color GetColorOfCell(int x, int y)
         {
-            return GetColorOfCell(new Vector2i(x, y));
+            return GetColorOfCell(new Hex(x, y));
         }
 
         public void ClearCellColors(Color c)
@@ -73,21 +73,21 @@ namespace SFNetHex
 
             foreach (var ct in ColorTable)
             {
-                HexShape.Position = HexUtils.HexToPixel(this[ct.Key], Layout);
+                HexShape.Position = HexUtils.HexToPixel(ct.Key, Layout);
                 HexShape.FillColor = ct.Value;
                 target.Draw(HexShape, states);
             }
         }
 
-        protected override void Add(Vector2i i, Hex h)
+        protected override void Add(Hex h)
         {
-            base.Add(i, h);
-            ColorTable.Add(i, Color.Black);
+            base.Add(h);
+            ColorTable.Add(h, Color.Black);
         }
 
         private ConvexShape BuildShape()
         {
-            var hex = HexUtils.PixelToHex(new Vector2f(0, 0), Layout);
+            var hex = HexUtils.PixelToHex(new Vector2f(0, 0), Layout).RoundHex();
             var shape = new ConvexShape(6)
             {
                 OutlineThickness = 1,

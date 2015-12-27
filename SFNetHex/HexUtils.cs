@@ -1,43 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using SFML.System;
 
 namespace SFNetHex
 {
     public static class HexUtils
     {
-        private static readonly Hex[] HexDirections = {
-            new Hex(1, 0),
-            new Hex(1, -1),
-            new Hex(0, -1),
-            new Hex(-1, 0),
-            new Hex(-1, 1),
-            new Hex(0, 1),
-        };
-
-        public static Hex HexDirection(int i)
+        public static int HexDistance(Hex a, Hex b)
         {
-            if (i < 0 || i > 5)
-            {
-                throw new ArgumentException("HexDirection can only accept a number from 0-5", nameof(i));
-            }
-
-            return HexDirections[i];
-        }
-
-        public static Hex HexNeighbor(this Hex h, int dir)
-        {
-            return h + HexDirection(dir);
-        }
-
-        public static float HexLength(this Hex i)
-        {
-            return (Math.Abs(i.X) + Math.Abs(i.Y) + Math.Abs(i.Z))/2;
-        }
-
-        public static float HexDistance(Hex a, Hex b)
-        {
-            return (a - b).HexLength();
+            return (a - b).Length();
         }
 
         public static Vector2f HexToPixel(Hex h, Layout l)
@@ -63,14 +33,14 @@ namespace SFNetHex
             return HexIndexToPixel(i.X, i.Y, l);
         }
 
-        public static Hex PixelToHex(Vector2f p, Layout l)
+        public static FractionalHex PixelToHex(Vector2f p, Layout l)
         {
             var o = l.Orientation;
             var pt = new Vector2f((p.X - l.Origin.X) / l.Size.X, 
                                     (p.Y - l.Origin.Y) / l.Size.Y);
             var x = o.B0*pt.X + o.B1*pt.Y;
             var y = o.B2*pt.X + o.B3*pt.Y;
-            return new Hex(x, y);
+            return new FractionalHex(x, y);
         }
 
         public static Hex PixelToWholeHex(Vector2f p, Layout l)
@@ -81,16 +51,16 @@ namespace SFNetHex
         public static Vector2i PixelToHexIndex(Vector2f p, Layout l)
         {
             var h = PixelToHex(p, l).RoundHex();
-            return new Vector2i((int) h.X, (int) h.Y);
+            return new Vector2i(h.X, h.Y);
         }
 
-        public static Hex RoundHex(this Hex h)
+        public static Hex RoundHex(this FractionalHex h)
         {
             //We have to perform this round/dif check to maintain the 
             //cubic coordinate trait that x + y + z = 0
-            var rx = (float)Math.Round(h.X);
-            var ry = (float)Math.Round(h.Y);
-            var rz = (float)Math.Round(h.Z);
+            var rx = (int)Math.Round(h.X);
+            var ry = (int)Math.Round(h.Y);
+            var rz = (int)Math.Round(h.Z);
             var xdif = Math.Abs(rx - h.X);
             var ydif = Math.Abs(ry - h.Y);
             var zdif = Math.Abs(rz - h.Z);
@@ -116,19 +86,6 @@ namespace SFNetHex
             var angle = (float) (2f*Math.PI*(corner + l.Orientation.StartAngle)/6);
 
             return new Vector2f((float) (l.Size.X * Math.Cos(angle)), (float) (l.Size.Y * Math.Sin(angle)));
-        }
-
-        public static List<Vector2f> Corners(this Hex h, Layout l)
-        {
-            var ret = new List<Vector2f>();
-            var center = HexToPixel(h, l);
-
-            for (var i = 0; i < 6; i++)
-            {
-                ret.Add(center + HexCornerOffset(i, l));
-            }
-
-            return ret;
         }
     }
 }
