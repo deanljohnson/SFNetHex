@@ -52,7 +52,7 @@
     <Compile Include="FractionalHex.cs" />
     <Compile Include="Hex.cs" />
     <Compile Include="DrawableHexMap.cs" />
-    <Compile Include="HexMap.cs" />
+    <Compile Include="HexSet.cs" />
     <Compile Include="HexUtils.cs" />
     <Compile Include="Layout.cs" />
     <Compile Include="Orientation.cs" />

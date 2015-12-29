@@ -5,7 +5,7 @@ using SFML.System;
 
 namespace SFNetHex
 {
-    public class DrawableHexMap : HexMap, Drawable
+    public class DrawableHexSet : HexSet, Drawable
     {
         protected ConvexShape HexShape { get; }
         protected Dictionary<Hex, Color> ColorTable { get; set; } = new Dictionary<Hex, Color>();
@@ -21,18 +21,18 @@ namespace SFNetHex
         }
 
         /// <summary>
-        /// Creates a hexagon shaped DrawableHexMap of the given radius
+        /// Creates a hexagon shaped DrawableHexSet of the given radius
         /// </summary>
-        public DrawableHexMap(int rad, Orientation o, Vector2f cellSize)
+        public DrawableHexSet(int rad, Orientation o, Vector2f cellSize)
             : base(rad, o, cellSize)
         {
             HexShape = BuildShape();
         }
 
         /// <summary>
-        /// Creates a DrawableHexMap of the given hexes
+        /// Creates a DrawableHexSet of the given hexes
         /// </summary>
-        public DrawableHexMap(HashSet<Hex> hexes, Orientation o, Vector2f cellSize)
+        public DrawableHexSet(HashSet<Hex> hexes, Orientation o, Vector2f cellSize)
             : base(hexes, o, cellSize)
         {
             HexShape = BuildShape();
@@ -41,11 +41,6 @@ namespace SFNetHex
             {
                 ColorTable.Add(hex, Color.Black);
             }
-        }
-
-        public bool Contains(Hex h)
-        {
-            return HexSet.Contains(h);
         }
 
         public void SetColorOfCell(Hex h, Color c)
@@ -95,9 +90,40 @@ namespace SFNetHex
             }
         }
 
-        protected override void OnAdd(Hex h)
+        public override bool Add(Hex h)
         {
+            if (!base.Add(h)) return false;
+
             ColorTable.Add(h, Color.Black);
+            return true;
+        }
+
+        public override void UnionWith(IEnumerable<Hex> hexes)
+        {
+            var hexList = hexes.ToList();
+            base.UnionWith(hexList);
+
+            foreach (var hex in hexList.Where(h => !ColorTable.ContainsKey(h)))
+            {
+                ColorTable.Add(hex, Color.Black);
+            }
+        }
+
+        public override void ExceptWith(IEnumerable<Hex> hexes)
+        {
+            var hexList = hexes.ToList();
+            base.ExceptWith(hexList);
+
+            foreach (var hex in hexList.Where(h => ColorTable.ContainsKey(h)))
+            {
+                ColorTable.Remove(hex);
+            }
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
+            ColorTable.Clear();
         }
 
         private ConvexShape BuildShape()

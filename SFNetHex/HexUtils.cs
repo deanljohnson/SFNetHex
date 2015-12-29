@@ -59,7 +59,7 @@ namespace SFNetHex
         public static Vector2f HexCornerOffset(int corner, Layout l)
         {
             var angle = (float) (2f*Math.PI*(corner + l.Orientation.StartAngle)/6);
-
+            
             return new Vector2f((float) (l.Size.X * Math.Cos(angle)), (float) (l.Size.Y * Math.Sin(angle)));
         }
     }

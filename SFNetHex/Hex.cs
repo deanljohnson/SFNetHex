@@ -7,7 +7,7 @@ namespace SFNetHex
     public struct Hex
     {
         //NOTE: If the values of this array are changed/reordered
-        //check on the HexMap.GetHexesInRing method - it will probably need to be changed
+        //check on the HexSet.GetHexesInRing method - it will probably need to be changed
         public static readonly Hex[] HexDirections = {
             new Hex(1, 0),
             new Hex(1, -1),
@@ -59,14 +59,14 @@ namespace SFNetHex
         }
 
         /// <summary>
-        /// Returns a List of all Hexes in the a line from start to end
+        /// Returns a List of all Hex locations in a line from start to end
         /// </summary>
         public static HashSet<Hex> GetHexesInLine(Hex start, Hex end)
         {
-            if (start == end)
+            /*if (start == end)
             {
                 return new HashSet<Hex> { start };
-            }
+            }*/
 
             var ret = new HashSet<Hex>();
             var n = HexUtils.HexDistance(start, end);
@@ -81,7 +81,7 @@ namespace SFNetHex
         }
 
         /// <summary>
-        /// Returns a List of all Hexes within range of center
+        /// Returns a List of all Hex locations within range of center
         /// </summary>
         public static HashSet<Hex> GetHexesInRange(Hex center, int range)
         {
@@ -99,7 +99,7 @@ namespace SFNetHex
         }
 
         /// <summary>
-        /// Returns a List of all Hexes that are at the given radius from the given center
+        /// Returns a List of all Hex locations that are at the given radius from the given center
         /// </summary>
         public static HashSet<Hex> GetHexesInRing(Hex center, int radius)
         {

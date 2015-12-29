@@ -16,7 +16,7 @@ namespace SFNetHexDemo
         private static long m_LastTime { get; set; }
 
         public static RenderWindow Window { get; private set; }
-        public static DrawableHexMap DrawableHexMap { get; set; }
+        public static DrawableHexSet DrawableHexSet { get; set; }
 
         public static void Main()
         {
@@ -28,16 +28,14 @@ namespace SFNetHexDemo
         {
             m_Timer.Start();
 
-            var hexes = Hex.GetHexesInRange(Hex.Zero, 50);
-            hexes.ExceptWith(Hex.GetHexesInRange(Hex.Zero, 30));
-            hexes.UnionWith(Hex.GetHexesInRange(Hex.Zero, 10));
-
-            DrawableHexMap = new DrawableHexMap(hexes, Orientation.Flat, new Vector2f(5, 5))
+            DrawableHexSet = new DrawableHexSet(50, Orientation.Flat, new Vector2f(5, 5))
             {
                 Position = new Vector2f(Window.Size.X / 2f, Window.Size.Y / 2f)
             };
+            DrawableHexSet.ExceptWith(Hex.GetHexesInRange(Hex.Zero, 30));
+            DrawableHexSet.UnionWith(Hex.GetHexesInRange(Hex.Zero, 10));
 
-            DrawableHexMap.SetColorOfCell(0, 0, Color.Green);
+            DrawableHexSet.SetColorOfCell(0, 0, Color.Green);
             
             while (Window.IsOpen)
             {
@@ -57,31 +55,31 @@ namespace SFNetHexDemo
         {
             Console.Clear();
             var mousePos = Mouse.GetPosition(Window);
-            var mouseHex = DrawableHexMap.GetNearestWholeHex(new Vector2f(mousePos.X, mousePos.Y));
+            var mouseHex = DrawableHexSet.GetNearestWholeHex(new Vector2f(mousePos.X, mousePos.Y));
             Console.WriteLine($"Hex Closest to Mouse: {mouseHex}");
 
-            var rangeHexes = DrawableHexMap.GetHexesInRange(Hex.Zero, mouseHex.Length());
-            var lineHexes = DrawableHexMap.GetHexesInLine(Hex.Zero, mouseHex);
-            var ringHexes = DrawableHexMap.GetHexesInRing(Hex.Zero, mouseHex.Length());
+            var rangeHexes = DrawableHexSet.GetHexesInRange(Hex.Zero, mouseHex.Length());
+            var lineHexes = DrawableHexSet.GetHexesInLine(Hex.Zero, mouseHex);
+            var ringHexes = DrawableHexSet.GetHexesInRing(Hex.Zero, mouseHex.Length());
 
-            DrawableHexMap.ClearCellColors(Color.Black);
+            DrawableHexSet.ClearCellColors(Color.Black);
             foreach (var h in rangeHexes)
             {
-                DrawableHexMap.SetColorOfCell(h, Color.Cyan);
+                DrawableHexSet.SetColorOfCell(h, Color.Cyan);
             }
             foreach (var h in ringHexes)
             {
-                DrawableHexMap.SetColorOfCell(h, Color.Magenta);
+                DrawableHexSet.SetColorOfCell(h, Color.Magenta);
             }
             foreach (var h in lineHexes)
             {
-                DrawableHexMap.SetColorOfCell(h, Color.Green);
+                DrawableHexSet.SetColorOfCell(h, Color.Green);
             }
         }
 
         private static void Render()
         {
-            Window.Draw(DrawableHexMap);
+            Window.Draw(DrawableHexSet);
         }
 
         private static float GetDeltaTime()
