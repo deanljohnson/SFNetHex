@@ -102,6 +102,7 @@ namespace SFNetHex
             var results = Hex.GetHexesInRing(center, radius);
             return TrimToInSet(results);
         }
+
         private HashSet<Hex> TrimToInSet(HashSet<Hex> hexes)
         {
             hexes.IntersectWith(m_HexSet);
