@@ -72,7 +72,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DrawableHexMap.cs" />
+    <Compile Include="DrawableHexSet.cs" />
     <Compile Include="Game.cs" />
   </ItemGroup>
   <ItemGroup>
